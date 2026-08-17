@@ -12,3 +12,12 @@
 export function wantsNativeMenuBar(platform: NodeJS.Platform): boolean {
   return platform === 'darwin'
 }
+
+/**
+ * Packaged macOS launches should keep the bundle `.icns` in the Dock.
+ * `dock.setIcon(png)` replaces that mask with a raw bitmap, which modern
+ * macOS then draws as a sharp square.
+ */
+export function wantsRuntimeDockIcon(platform: NodeJS.Platform, packaged: boolean): boolean {
+  return platform === 'darwin' && !packaged
+}

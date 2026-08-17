@@ -2,7 +2,7 @@ import { EventEmitter } from 'node:events'
 import { join } from 'node:path'
 import { describe, expect, it, vi } from 'vitest'
 import { hostEnvironment, startDesktopHost } from '../src/host.ts'
-import { wantsNativeMenuBar } from '../src/menu.ts'
+import { wantsNativeMenuBar, wantsRuntimeDockIcon } from '../src/menu.ts'
 import { parseReadyUrl } from '../src/ready-url.ts'
 import { resolveDesktopRuntime } from '../src/runtime.ts'
 
@@ -68,6 +68,12 @@ describe('wantsNativeMenuBar', () => {
     expect(wantsNativeMenuBar('darwin')).toBe(true)
     expect(wantsNativeMenuBar('win32')).toBe(false)
     expect(wantsNativeMenuBar('linux')).toBe(false)
+  })
+
+  it('does not replace the packaged macOS Dock icon with a PNG', () => {
+    expect(wantsRuntimeDockIcon('darwin', false)).toBe(true)
+    expect(wantsRuntimeDockIcon('darwin', true)).toBe(false)
+    expect(wantsRuntimeDockIcon('win32', false)).toBe(false)
   })
 })
 

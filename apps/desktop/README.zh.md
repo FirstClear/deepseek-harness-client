@@ -21,7 +21,7 @@ pnpm desktop:pack:mac    # DeepSeek Harness.app + .dmg (this machine's arch)
 pnpm desktop:pack:win    # NSIS .exe (stages win32-x64 Node, then electron-builder --win)
 ```
 
-`pnpm desktop:pack` 打包当前平台。产物位于 `apps/desktop/release/`。暂存会下载官方 Node 22.23.1，并把 `@deepseek-ai/dsh` `pnpm deploy` 进 `apps/desktop/runtime/`（已 gitignore）。程序坞、窗口与安装包图标使用 `website/public/favicon.svg` 中的官方 DeepSeek 鲸鱼标（品牌色 `#4D6BFE`），栅格化后放在 `apps/desktop/build/`。
+`pnpm desktop:pack` 打包当前平台。产物位于 `apps/desktop/release/`。暂存会下载官方 Node 22.23.1，并把 `@deepseek-ai/dsh` `pnpm deploy` 进 `apps/desktop/runtime/`（已 gitignore）。程序坞、窗口与安装包图标使用 `website/public/favicon.svg` 中的官方 DeepSeek 鲸鱼标，放在带透明圆角的 `#4D6BFE` squircle 上（`apps/desktop/build/`；用 `scripts/rasterize-icons.sh` 重新栅格化）。
 
 Host 绑定 `127.0.0.1` 上由操作系统分配的端口。原生 addon 在子 Node 进程中加载，不在 Electron 中加载。Windows 与 Linux 隐藏 Electron 窗口内的 File/Edit 菜单；macOS 保留系统应用菜单。
 

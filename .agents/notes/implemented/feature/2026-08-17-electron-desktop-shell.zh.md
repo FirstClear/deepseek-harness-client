@@ -14,7 +14,7 @@ Status: implemented
 
 `apps/desktop`（`@deepseek-ai/dsh-desktop`）是一个 Electron 窗口外加一个子 Node 进程。Electron 从不把 harness 插件加载进自己的 ABI。启动时它用捆绑的官方 Node 22 二进制运行 `@deepseek-ai/dsh` 的 `lib/bin.js web --port 0`，等待 `dsh web: http://127.0.0.1:<port>` 就绪行，再在沙箱 BrowserWindow 中加载该源（关闭 `nodeIntegration`，打开 `contextIsolation`）。`--port 0` 避免与已经绑定 3080 的开发者 `dsh web` 冲突。Windows 与 Linux 隐藏 Electron 窗口内的 File/Edit 菜单（`Menu.setApplicationMenu(null)`）；macOS 保留系统应用菜单。
 
-打包方式是对 `@deepseek-ai/dsh` 做 `pnpm deploy`（CLI 启动的同一套生产闭包，含 `@deepseek-ai/dsh-web-frontend` dist），再加上目标平台的官方 Node tar/zip，复制进 `apps/desktop/runtime/`，作为 electron-builder 的 `extraResources`。因此原生 addon（`node-pty`、koffi）对着 Node 加载，而不是 Electron。凭据仍在默认 `~/.dsh` 主目录（除非设置了 `DSH_HOME`），所以在桌面 UI 里输入的密钥与 `dsh web` 读到的是同一份存储。程序坞、窗口与安装包图标是 `website/public/favicon.svg` 中的官方 DeepSeek 鲸鱼标，铺满 `#4D6BFE` 方底（`apps/desktop/build/icon.{svg,png,icns,ico}`）。
+打包方式是对 `@deepseek-ai/dsh` 做 `pnpm deploy`（CLI 启动的同一套生产闭包，含 `@deepseek-ai/dsh-web-frontend` dist），再加上目标平台的官方 Node tar/zip，复制进 `apps/desktop/runtime/`，作为 electron-builder 的 `extraResources`。因此原生 addon（`node-pty`、koffi）对着 Node 加载，而不是 Electron。凭据仍在默认 `~/.dsh` 主目录（除非设置了 `DSH_HOME`），所以在桌面 UI 里输入的密钥与 `dsh web` 读到的是同一份存储。程序坞、窗口与安装包图标是 `website/public/favicon.svg` 中的官方 DeepSeek 鲸鱼标，放在带透明圆角的 `#4D6BFE` squircle 上（`apps/desktop/build/icon.{svg,png,icns,ico}`）。
 
 未打包的 `pnpm desktop:dev` 使用 `npm_node_execpath` 与检出中的 `apps/cli/lib/bin.js`。已打包启动若打不出就绪行，会显示错误对话框并退出。`.github/workflows/desktop-release.yml` 在 `v*` 标签上打包 macOS `.dmg` 与 Windows `.exe`，并挂到 GitHub Release 上。
 

@@ -21,7 +21,7 @@ pnpm desktop:pack:mac    # DeepSeek Harness.app + .dmg (this machine's arch)
 pnpm desktop:pack:win    # NSIS .exe (stages win32-x64 Node, then electron-builder --win)
 ```
 
-`pnpm desktop:pack` packs the current platform. Artifacts land in `apps/desktop/release/`. Staging downloads official Node 22.23.1 and `pnpm deploy`s `@deepseek-ai/dsh` into `apps/desktop/runtime/` (gitignored). Dock, window, and installer icons use the official DeepSeek whale mark from `website/public/favicon.svg` (brand `#4D6BFE`), rasterized in `apps/desktop/build/`.
+`pnpm desktop:pack` packs the current platform. Artifacts land in `apps/desktop/release/`. Staging downloads official Node 22.23.1 and `pnpm deploy`s `@deepseek-ai/dsh` into `apps/desktop/runtime/` (gitignored). Dock, window, and installer icons use the official DeepSeek whale mark from `website/public/favicon.svg` on a `#4D6BFE` squircle with transparent corners (`apps/desktop/build/`; regenerate with `scripts/rasterize-icons.sh`).
 
 The host binds `127.0.0.1` on an OS-assigned port. Native addons load in the child Node process, not in Electron. Windows and Linux hide Electron's in-window File/Edit menu; macOS keeps the system application menu.
 

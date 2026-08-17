@@ -11,7 +11,7 @@ import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { app, BrowserWindow, dialog, Menu, shell } from 'electron'
 import { startDesktopHost, type DesktopHost } from './host.ts'
-import { wantsNativeMenuBar } from './menu.ts'
+import { wantsNativeMenuBar, wantsRuntimeDockIcon } from './menu.ts'
 import { resolveDesktopRuntime } from './runtime.ts'
 
 const PACKAGE_ROOT = dirname(fileURLToPath(new URL('../package.json', import.meta.url)))
@@ -102,7 +102,9 @@ function installMenu(): void {
 }
 
 void app.whenReady().then(async () => {
-  if (process.platform === 'darwin' && app.dock !== undefined) app.dock.setIcon(resolveAppIcon())
+  if (wantsRuntimeDockIcon(process.platform, app.isPackaged) && app.dock !== undefined) {
+    app.dock.setIcon(resolveAppIcon())
+  }
   installMenu()
   try {
     await boot()
