@@ -12,6 +12,7 @@ import { join } from 'node:path'
 import { Readable } from 'node:stream'
 import { pipeline } from 'node:stream/promises'
 import { parseArgs } from 'node:util'
+import { pruneDanglingSymlinks } from './prune-dangling-symlinks.ts'
 
 const ROOT = join(import.meta.dirname, '../../..')
 const DESKTOP = join(ROOT, 'apps/desktop')
@@ -118,6 +119,7 @@ async function main(): Promise<void> {
   await rm(join(RUNTIME, 'app'), { recursive: true, force: true })
   await cp(join(RUNTIME, 'app.real'), join(RUNTIME, 'app'), { recursive: true })
   await rm(join(RUNTIME, 'app.real'), { recursive: true, force: true })
+  await pruneDanglingSymlinks(join(RUNTIME, 'app'))
 
   const dist = nodeDist(platform, arch)
   const scratch = join(tmpdir(), `dsh-desktop-node-${String(process.pid)}`)
