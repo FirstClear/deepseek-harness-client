@@ -87,16 +87,20 @@ jobs:
           if [ "${GITHUB_REF_TYPE}" = "tag" ]; then
             tag="${GITHUB_REF_NAME}"
           else
-            tag="v0.1.0-rc.5-run.${GITHUB_RUN_NUMBER}"
+            tag="v0.1.0-run.${GITHUB_RUN_NUMBER}"
           fi
           mapfile -t files < <(find dist -type f)
           if [ "${#files[@]}" -eq 0 ]; then
             echo "no installer artifacts under dist/" >&2
             exit 1
           fi
+          extra=(--latest)
+          if [[ "${tag}" == *-* ]]; then
+            extra=(--prerelease)
+          fi
           gh release create "${tag}" "${files[@]}" \
             --repo "${GITHUB_REPOSITORY}" \
             --title "DeepSeek Harness ${tag}" \
             --notes "Electron installers for DeepSeek Harness. Install the .dmg or .exe, then paste an API key in Settings → Models." \
-            --prerelease \
+            "${extra[@]}" \
             --target "${GITHUB_SHA}"
