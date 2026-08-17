@@ -1,0 +1,102 @@
+# Pack macOS .dmg and Windows .exe for the Electron desktop shell, then attach
+# them to a GitHub Release. This is the client installer sequence; it does not
+# publish npm packages.
+name: Release (desktop)
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  PRIMARY_NODE_VERSION: '22'
+  DSH_TELEMETRY_DISABLED: '1'
+  CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+
+jobs:
+  pack:
+    name: Pack ${{ matrix.artifact }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-15
+            pack: pack:mac
+            artifact: macos
+          - os: windows-2022
+            pack: pack:win
+            artifact: windows
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - uses: pnpm/action-setup@v4
+        with:
+          dest: ${{ runner.temp }}/setup-pnpm
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.PRIMARY_NODE_VERSION }}
+
+      - name: Install (immutable)
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm run build
+
+      - name: Pack installer
+        run: pnpm --filter @deepseek-ai/dsh-desktop run ${{ matrix.pack }}
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: desktop-${{ matrix.artifact }}
+          if-no-files-found: error
+          path: |
+            apps/desktop/release/*.dmg
+            apps/desktop/release/*.exe
+            apps/desktop/release/*.zip
+            apps/desktop/release/*.blockmap
+            apps/desktop/release/*.yml
+
+  release:
+    name: GitHub Release
+    needs: pack
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if [ "${GITHUB_REF_TYPE}" = "tag" ]; then
+            tag="${GITHUB_REF_NAME}"
+          else
+            tag="v0.1.0-rc.5-run.${GITHUB_RUN_NUMBER}"
+          fi
+          mapfile -t files < <(find dist -type f)
+          if [ "${#files[@]}" -eq 0 ]; then
+            echo "no installer artifacts under dist/" >&2
+            exit 1
+          fi
+          gh release create "${tag}" "${files[@]}" \
+            --repo "${GITHUB_REPOSITORY}" \
+            --title "DeepSeek Harness ${tag}" \
+            --notes "Electron installers for DeepSeek Harness. Install the .dmg or .exe, then paste an API key in Settings → Models." \
+            --prerelease \
+            --target "${GITHUB_SHA}"
