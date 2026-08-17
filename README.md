@@ -2,56 +2,65 @@
 
 English | [中文](README.zh.md)
 
-DeepSeek Harness (`dsh`) is an open-source agent harness developed by [DeepSeek AI](https://deepseek.com).
+Desktop client for [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness), the open-source agent harness from [DeepSeek AI](https://deepseek.com).
 
-It uses an architecture where **everything is a plugin**, and is powered by [Cordis](https://github.com/cordiverse/cordis), whose design is described in [_A Programming Paradigm for Spatiotemporal Composability_](https://github.com/cordiverse/paper).
+Install a `.dmg` or `.exe`, open the app, and paste an API key in **Settings → Models**. You do not need Node, pnpm, or a repository checkout.
 
-## Developer preview
+## Download
 
-DeepSeek Harness is currently in _developer preview_ and is iterating rapidly. **THERE WILL BE COMPATIBILITY-BREAKING CHANGES.**
+Get the latest installers from [Releases](https://github.com/FirstClear/deepseek-harness-client/releases/latest):
+
+- macOS Apple Silicon: `DeepSeek.Harness-<version>-arm64.dmg`
+- Windows: `DeepSeek.Harness.Setup.<version>.exe`
+
+Intel Mac and Linux installers are not published yet.
+
+## Install
+
+### macOS
+
+1. Open the `.dmg` and drag **DeepSeek Harness** into **Applications**.
+2. This build is unsigned, so Gatekeeper may say the app is damaged. After copying it, run:
+
+```sh
+xattr -cr "/Applications/DeepSeek Harness.app"
+open "/Applications/DeepSeek Harness.app"
+```
+
+Open it from Applications, not from the `.dmg`.
+
+### Windows
+
+Run the `.exe` and follow the installer. You can choose the install directory.
+
+## First launch
+
+The window is the same Web UI as `dsh web`. Add a DeepSeek API key under **Settings → Models**. Credentials stay in `~/.dsh` (or `%USERPROFILE%\.dsh` on Windows) unless `DSH_HOME` is set.
 
 ## Run
 
-### Run from `npm`
-
-Install `Node.js`, then run:
-
-```sh
-npx @deepseek-ai/dsh web
-```
-
-The command starts the Web UI, served at `http://127.0.0.1:3080` by default. See [Web UI guide](docs/user/guide/index.md).
-
 ### Run from source
 
-To run from a repository checkout:
-
 ```sh
-git clone https://github.com/deepseek-ai/deepseek-harness.git
-cd deepseek-harness
+git clone https://github.com/FirstClear/deepseek-harness-client.git
+cd deepseek-harness-client
 pnpm install
 pnpm run build
-pnpm dsh web
+pnpm desktop:dev
 ```
 
-## Community and support
+Pack installers with `pnpm desktop:pack:mac` or `pnpm desktop:pack:win`. Details are in [`apps/desktop/README.md`](apps/desktop/README.md).
 
-- Feel free to submit feedback or bug reports through [GitHub Discussions](https://github.com/deepseek-ai/deepseek-harness/discussions).
-- Add the [`dsh-plugin`](https://github.com/topics/dsh-plugin) topic to your plugin repository for discoverability.
-- Join <a href="https://discord.gg/Ycq5dCaS4">DeepSeek Harness Discord community</a>.
+The CLI and Web UI from a checkout still work as in upstream: `pnpm dsh web`.
 
-## Contributing
+## How it works
 
-See [CONTRIBUTING.md](CONTRIBUTING.md).
-
-## Development
-
-Start with the [development guide](docs/development.md) and [architecture documentation](docs/architecture.md).
-
-For agents, follow [AGENTS.md](AGENTS.md).
+Electron is only a window. A bundled official Node 22 process runs `dsh web --port 0`, and the window loads that loopback origin. Native addons load in the child Node process, not in Electron.
 
 ## License
 
-[MIT](LICENSE)
+[MIT](LICENSE), same as upstream DeepSeek Harness.
+
+This repository is an independent snapshot that adds the desktop shell. The official project remains [deepseek-ai/deepseek-harness](https://github.com/deepseek-ai/deepseek-harness).
 
 Third-party dependencies and their licenses are disclosed in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
