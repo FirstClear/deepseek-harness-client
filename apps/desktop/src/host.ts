@@ -56,6 +56,7 @@ export async function startDesktopHost(options: StartDesktopHostOptions): Promis
   })
 
   let stdout = ''
+  let stderr = ''
   const url = await new Promise<string>((resolve, reject) => {
     const timer = setTimeout(() => {
       cleanup()
@@ -63,7 +64,9 @@ export async function startDesktopHost(options: StartDesktopHostOptions): Promis
     }, timeoutMs)
     const onExit = (code: number | null, signal: NodeJS.Signals | null): void => {
       cleanup()
-      reject(new Error(`dsh-desktop: host exited before ready (code ${String(code)}, signal ${String(signal)})`))
+      const detail = `${stdout}${stderr}`.trim()
+      const suffix = detail === '' ? '' : `\n${detail}`
+      reject(new Error(`dsh-desktop: host exited before ready (code ${String(code)}, signal ${String(signal)})${suffix}`))
     }
     const onStdout = (chunk: Buffer | string): void => {
       stdout += typeof chunk === 'string' ? chunk : chunk.toString('utf8')
@@ -84,7 +87,9 @@ export async function startDesktopHost(options: StartDesktopHostOptions): Promis
     }
     child.stdout.on('data', onStdout)
     child.stderr.on('data', (chunk: Buffer | string) => {
-      process.stderr.write(chunk)
+      const text = typeof chunk === 'string' ? chunk : chunk.toString('utf8')
+      stderr += text
+      process.stderr.write(text)
     })
     child.once('exit', onExit)
     child.once('error', onError)

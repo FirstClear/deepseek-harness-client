@@ -1,7 +1,9 @@
 /**
  * Stage the desktop extraResources tree: a production `pnpm deploy` of
  * `@deepseek-ai/dsh` plus an official Node binary so the installer does not
- * require a system Node or pnpm.
+ * require a system Node or pnpm. Peer workspace packages (cordis-plugin-group)
+ * must be installed; workspace symlinks are then materialized so the .app is
+ * self-contained.
  */
 
 import { spawn } from 'node:child_process'
@@ -13,6 +15,7 @@ import { Readable } from 'node:stream'
 import { pipeline } from 'node:stream/promises'
 import { parseArgs } from 'node:util'
 import { pruneDanglingSymlinks } from './prune-dangling-symlinks.ts'
+import { copyMissingWorkspacePackages, loadWorkspaceDirectories, materializeSymlinks } from './materialize-deploy.ts'
 
 const ROOT = join(import.meta.dirname, '../../..')
 const DESKTOP = join(ROOT, 'apps/desktop')
@@ -115,10 +118,9 @@ async function main(): Promise<void> {
     '--config.link-workspace-packages=true',
     join(RUNTIME, 'app'),
   ], ROOT)
-  await cp(join(RUNTIME, 'app'), join(RUNTIME, 'app.real'), { recursive: true })
-  await rm(join(RUNTIME, 'app'), { recursive: true, force: true })
-  await cp(join(RUNTIME, 'app.real'), join(RUNTIME, 'app'), { recursive: true })
-  await rm(join(RUNTIME, 'app.real'), { recursive: true, force: true })
+  const workspace = await loadWorkspaceDirectories(ROOT)
+  await copyMissingWorkspacePackages(join(RUNTIME, 'app'), workspace)
+  await materializeSymlinks(join(RUNTIME, 'app', 'node_modules'))
   await pruneDanglingSymlinks(join(RUNTIME, 'app'))
 
   const dist = nodeDist(platform, arch)
@@ -132,6 +134,8 @@ async function main(): Promise<void> {
   await cp(join(scratch, dist.binary), nodeDest)
   if (platform !== 'win32') await chmod(nodeDest, 0o755)
   await rm(scratch, { recursive: true, force: true })
+
+  await run(nodeDest, [join(RUNTIME, 'app', 'lib', 'bin.js'), 'web', '--help'], join(RUNTIME, 'app'))
 }
 
 void main().catch((error) => {

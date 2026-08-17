@@ -43,7 +43,8 @@ export function resolveDesktopRuntime(request: RuntimeRequest): DesktopRuntime {
     const runtimeRoot = join(request.resourcesPath, 'runtime')
     return {
       nodeBin: join(runtimeRoot, request.platform === 'win32' ? 'node.exe' : 'node'),
-      cliBin: join(runtimeRoot, 'app', 'node_modules', '@deepseek-ai', 'dsh', 'lib', 'bin.js'),
+      // pnpm deploy writes the filtered package at the deploy root, not under node_modules.
+      cliBin: join(runtimeRoot, 'app', 'lib', 'bin.js'),
       cwd: request.homedir,
     }
   }

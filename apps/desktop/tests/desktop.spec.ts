@@ -37,7 +37,7 @@ describe('resolveDesktopRuntime', () => {
       homedir,
     })).toEqual({
       nodeBin: join(resourcesPath, 'runtime', 'node'),
-      cliBin: join(resourcesPath, 'runtime', 'app', 'node_modules', '@deepseek-ai', 'dsh', 'lib', 'bin.js'),
+      cliBin: join(resourcesPath, 'runtime', 'app', 'lib', 'bin.js'),
       cwd: homedir,
     })
     expect(resolveDesktopRuntime({
@@ -128,7 +128,8 @@ describe('startDesktopHost', () => {
       spawn: vi.fn().mockReturnValue(child) as never,
       timeoutMs: 1_000,
     })
+    child.stderr.emit('data', Buffer.from("Error [ERR_MODULE_NOT_FOUND]: Cannot find package '@deepseek-ai/cordis-plugin-group'\n"))
     child.emit('exit', 1, null)
-    await expect(started).rejects.toThrow(/exited before ready/)
+    await expect(started).rejects.toThrow(/cordis-plugin-group/)
   })
 })

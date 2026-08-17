@@ -84,6 +84,7 @@
     "apps/web/stress-tests/reasoning-chunks.stress.ts",
     "apps/cli/tests/**/*.ts",
     "apps/desktop/scripts/prune-dangling-symlinks.ts",
+    "apps/desktop/scripts/materialize-deploy.ts",
     "apps/desktop/tests/**/*.ts",
     "examples/*/src/**/*.ts",
     "examples/*/start.ts",
