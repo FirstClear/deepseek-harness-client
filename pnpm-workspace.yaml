@@ -27,6 +27,8 @@ linkWorkspacePackages: true
 overrides:
   '@deepseek-ai/cosmokit': 'link:vendor/cosmokit'
   '@deepseek-ai/schemastery': 'link:vendor/schemastery'
+  # app-builder-lib 26.15 reads ElectronDownloadCacheMode, which @electron/get 3 does not export.
+  'app-builder-lib>@electron/get': '4.0.3'
 
 peerDependencyRules:
   allowedVersions:

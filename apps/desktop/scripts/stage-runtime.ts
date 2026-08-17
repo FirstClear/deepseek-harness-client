@@ -83,6 +83,7 @@ async function extract(archive: string, kind: 'tar.gz' | 'zip', dest: string): P
 
 async function main(): Promise<void> {
   const parsed = parseArgs({
+    args: process.argv.slice(2).filter(arg => arg !== '--'),
     options: {
       platform: { type: 'string' },
       arch: { type: 'string' },

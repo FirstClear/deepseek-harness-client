@@ -23,7 +23,7 @@
     "stage": "tsx scripts/stage-runtime.ts",
     "pack": "pnpm run build:shell && pnpm run stage && electron-builder --publish never",
     "pack:mac": "pnpm run build:shell && pnpm run stage && electron-builder --mac dmg --publish never",
-    "pack:win": "pnpm run build:shell && pnpm run stage -- --platform win32 --arch x64 && electron-builder --win nsis --publish never"
+    "pack:win": "pnpm run build:shell && tsx scripts/stage-runtime.ts --platform win32 --arch x64 && electron-builder --win nsis --publish never"
   },
   "devDependencies": {
     "electron": "^37.2.6",
