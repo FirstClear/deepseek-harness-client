@@ -50,7 +50,13 @@ function nodeDist(platform: StagePlatform, arch: StageArch): { url: string; arch
 
 async function run(command: string, args: string[], cwd: string): Promise<void> {
   await new Promise<void>((resolve, reject) => {
-    const child = spawn(command, args, { cwd, stdio: 'inherit' })
+    const child = spawn(command, args, {
+      cwd,
+      stdio: 'inherit',
+      // Windows `.cmd` shims (pnpm) are not found by spawn() without a shell.
+      shell: process.platform === 'win32',
+      windowsHide: true,
+    })
     child.once('error', reject)
     child.once('exit', (code) => {
       if (code === 0) resolve()
