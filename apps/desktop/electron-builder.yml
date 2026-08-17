@@ -1,0 +1,32 @@
+appId: com.deepseek.harness
+productName: DeepSeek Harness
+copyright: Copyright © DeepSeek
+directories:
+  output: release
+files:
+  - lib/*.js
+asar: true
+npmRebuild: false
+nodeGypRebuild: false
+extraResources:
+  - from: runtime
+    to: runtime
+  - from: build/icon.png
+    to: icon.png
+mac:
+  category: public.app-category.developer-tools
+  icon: build/icon.icns
+  target:
+    - dmg
+  identity: null
+win:
+  icon: build/icon.ico
+  target:
+    - nsis
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+electronLanguages:
+  - en
+  - zh-CN
