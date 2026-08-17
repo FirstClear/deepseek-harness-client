@@ -16,7 +16,7 @@ The [GUI layering note](../architecture/2026-07-19-gui-layering-and-rpc-protocol
 
 Packaging is `pnpm deploy` of `@deepseek-ai/dsh` (the same production closure the CLI boots, including `@deepseek-ai/dsh-web-frontend` dist) plus the official Node tarball/zip for the target, copied into `apps/desktop/runtime/` as electron-builder `extraResources`. Native addons (`node-pty`, koffi) therefore load against Node, not Electron. Credentials stay in the default `~/.dsh` home unless `DSH_HOME` is set, so a key entered in the desktop UI is the same store `dsh web` reads. The dock, window, and installer icon is the official DeepSeek whale from `website/public/favicon.svg` on a full-bleed `#4D6BFE` square (`apps/desktop/build/icon.{svg,png,icns,ico}`).
 
-Unpackaged `pnpm desktop:dev` uses `npm_node_execpath` and the checkout's `apps/cli/lib/bin.js`. A packaged launch that cannot print a readiness line shows an error dialog and exits.
+Unpackaged `pnpm desktop:dev` uses `npm_node_execpath` and the checkout's `apps/cli/lib/bin.js`. A packaged launch that cannot print a readiness line shows an error dialog and exits. `.github/workflows/desktop-release.yml` packs the macOS `.dmg` and Windows `.exe` on `v*` tags and attaches them to a GitHub Release.
 
 The IPC `file://` carrier named in the GUI layering note remains deferred: this shell reuses the HTTP loopback Host unchanged.
 

@@ -25,6 +25,8 @@ pnpm desktop:pack:win    # NSIS .exe (stages win32-x64 Node, then electron-build
 
 The host binds `127.0.0.1` on an OS-assigned port. Native addons load in the child Node process, not in Electron. Windows and Linux hide Electron's in-window File/Edit menu; macOS keeps the system application menu.
 
+Push a `v*` tag (or run **Release (desktop)** from Actions) to pack the macOS `.dmg` and Windows `.exe` and attach them to a GitHub Release.
+
 ## Known Limitations and Deferred Work
 
 - **The IPC `file://` carrier is not this shell.** Electron talks to the Host over loopback HTTP. See the [electron desktop shell Agent Note](../../.agents/notes/implemented/feature/2026-08-17-electron-desktop-shell.md).

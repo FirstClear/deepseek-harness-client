@@ -16,7 +16,7 @@ Status: implemented
 
 打包方式是对 `@deepseek-ai/dsh` 做 `pnpm deploy`（CLI 启动的同一套生产闭包，含 `@deepseek-ai/dsh-web-frontend` dist），再加上目标平台的官方 Node tar/zip，复制进 `apps/desktop/runtime/`，作为 electron-builder 的 `extraResources`。因此原生 addon（`node-pty`、koffi）对着 Node 加载，而不是 Electron。凭据仍在默认 `~/.dsh` 主目录（除非设置了 `DSH_HOME`），所以在桌面 UI 里输入的密钥与 `dsh web` 读到的是同一份存储。程序坞、窗口与安装包图标是 `website/public/favicon.svg` 中的官方 DeepSeek 鲸鱼标，铺满 `#4D6BFE` 方底（`apps/desktop/build/icon.{svg,png,icns,ico}`）。
 
-未打包的 `pnpm desktop:dev` 使用 `npm_node_execpath` 与检出中的 `apps/cli/lib/bin.js`。已打包启动若打不出就绪行，会显示错误对话框并退出。
+未打包的 `pnpm desktop:dev` 使用 `npm_node_execpath` 与检出中的 `apps/cli/lib/bin.js`。已打包启动若打不出就绪行，会显示错误对话框并退出。`.github/workflows/desktop-release.yml` 在 `v*` 标签上打包 macOS `.dmg` 与 Windows `.exe`，并挂到 GitHub Release 上。
 
 GUI 分层说明里点名的 IPC `file://` 载体仍推迟：此外壳原样复用 HTTP 环回 Host。
 

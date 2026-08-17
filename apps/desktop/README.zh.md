@@ -25,6 +25,8 @@ pnpm desktop:pack:win    # NSIS .exe (stages win32-x64 Node, then electron-build
 
 Host 绑定 `127.0.0.1` 上由操作系统分配的端口。原生 addon 在子 Node 进程中加载，不在 Electron 中加载。Windows 与 Linux 隐藏 Electron 窗口内的 File/Edit 菜单；macOS 保留系统应用菜单。
 
+推送 `v*` 标签（或在 Actions 里运行 **Release (desktop)**）会打包 macOS `.dmg` 与 Windows `.exe`，并挂到 GitHub Release 上。
+
 ## Known Limitations and Deferred Work
 
 - **IPC `file://` 载体不是此外壳。** Electron 通过环回 HTTP 与 Host 通信。见 [Electron 桌面外壳 Agent Note](../../.agents/notes/implemented/feature/2026-08-17-electron-desktop-shell.md)。

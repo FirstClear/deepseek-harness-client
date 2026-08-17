@@ -73,6 +73,11 @@ async function extract(archive: string, kind: 'tar.gz' | 'zip', dest: string): P
     await run('tar', ['-xzf', archive, '-C', dest], dest)
     return
   }
+  // Windows runners have no unzip; bsdtar on win32 reads zip. macOS/Linux keep unzip.
+  if (process.platform === 'win32') {
+    await run('tar', ['-xf', archive, '-C', dest], dest)
+    return
+  }
   await run('unzip', ['-q', archive, '-d', dest], dest)
 }
 
